@@ -18,7 +18,6 @@ export class MainDisplayComponent implements OnInit {
   constructor(private dataService: DataService) {  }
 
   ngOnInit() {
-    
     // creating a cities array for select options
 
     this.cities = this.dataService.createCitiesArray();
@@ -26,7 +25,7 @@ export class MainDisplayComponent implements OnInit {
 
   // changing mode of the view to display a table instead of ISS image
 
-  cityChanged(){
+  cityChanged() {
     this.tableMode = true;
   }
  }

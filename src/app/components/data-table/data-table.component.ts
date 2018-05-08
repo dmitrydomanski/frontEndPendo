@@ -31,21 +31,21 @@ export class DataTableComponent implements OnChanges {
   // requesting data on a selected city, changing the view to display table
 
   requestData(city) {
-    let cityObject = this.cities.find(c => c.name === city);
-    this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data => {
-      this.dataSource.data = data.response;
-      console.log(data.response);
-      let dates = data.response.map(p => {
-        return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth()+1) + '-' + new Date(p.risetime * 1000).getDate()
-      });
-      let uniqueDays = dates.filter(this.unique);
-      console.log(dates, uniqueDays);
-    });
+    const cityObject = this.cities.find(c => c.name === city);
+    this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data =>
+      this.dataSource.data = data.response);
   }
 
   unique(value, index, self) {
     return self.indexOf(value) === index;
   }
 
-
+//   console.log(data.response);
+//   const dates = data.response.map(p => {
+//     return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
+//       + '-' + new Date(p.risetime * 1000).getDate();
+//   });
+//   const uniqueDays = dates.filter(this.unique);
+//   console.log(dates, uniqueDays);
+// });
 }

@@ -8,7 +8,7 @@ import { DateConstants } from '../pipes/pipe-const';
 export class RisePipe extends DatePipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
-    return super.transform(new Date(value*1000), DateConstants.RISE);
+    return super.transform(new Date(value * 1000), DateConstants.RISE);
   }
 
 }
