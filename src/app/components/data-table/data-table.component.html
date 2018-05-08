@@ -19,7 +19,7 @@
       <!-- Day/Night -->
       <ng-container matColumnDef="Day/Night">
         <th mat-header-cell *matHeaderCellDef> Day/Night </th>
-        <td class="day" mat-cell *matCellDef="let pass" >  </td>
+        <td [ngClass]="{'day': pass.daytime, 'night': !pass.daytime}" mat-cell *matCellDef="let pass" >  </td>
       </ng-container>
 
 

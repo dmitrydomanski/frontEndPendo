@@ -1,10 +1,13 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
-.day:before{
+.day:before {
    content: "\f185";
    font-family: FontAwesome;
-   color: crimson;
-   left: -5px;
-   position: absolute;
-   top: 0;
+   color: crimson;   
+}
+
+.night:before {
+content: "\f186";
+font-family: FontAwesome;
+color: blueviolet;
 }

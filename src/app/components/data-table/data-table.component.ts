@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChange, SimpleChanges } from '@angul
 import { MatTableDataSource } from '@angular/material';
 import { DataService } from '../../services/data.service';
 import { ICity } from '../../models/city.model';
+import { IPass } from '../../models/pass.model';
 
 
 @Component({
@@ -32,20 +33,35 @@ export class DataTableComponent implements OnChanges {
 
   requestData(city) {
     const cityObject = this.cities.find(c => c.name === city);
-    this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data =>
-      this.dataSource.data = data.response);
+    this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data => {
+      this.dataSource.data = data.response.map(element => {
+        return { risetime: element.risetime, duration: element.duration, daytime: false };
+      });
+      this.getUniqueDates(data.response).forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d).subscribe(smth => {
+        console.log(smth);
+      }));
+    });
   }
 
+  // extracting unique elements from an array to use further
   unique(value, index, self) {
     return self.indexOf(value) === index;
   }
 
-//   console.log(data.response);
-//   const dates = data.response.map(p => {
-//     return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
-//       + '-' + new Date(p.risetime * 1000).getDate();
-//   });
-//   const uniqueDays = dates.filter(this.unique);
-//   console.log(dates, uniqueDays);
-// });
+  getUniqueDates(response) {
+    const dates = response.map(p => {
+      return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
+        + '-' + new Date(p.risetime * 1000).getDate();
+    });
+    return dates.filter(this.unique);
+  }
+
+  //   console.log(data.response);
+  //   const dates = data.response.map(p => {
+  //     return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
+  //       + '-' + new Date(p.risetime * 1000).getDate();
+  //   });
+  //   const uniqueDays = dates.filter(this.unique);
+  //   console.log(dates, uniqueDays);
+  // });
 }
