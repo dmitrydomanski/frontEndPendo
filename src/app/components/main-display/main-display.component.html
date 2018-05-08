@@ -1,0 +1,24 @@
+<mat-card>
+
+  <mat-toolbar class="row">
+    <mat-card-title *ngIf="!tableMode" >When can I see ISS (International Space Station)?</mat-card-title>
+    <mat-card-title *ngIf="tableMode" >The next ten passes of the ISS over {{selectedCity}}</mat-card-title>
+    <mat-form-field>
+      <mat-select placeholder="Select a city" [(ngModel)]="selectedCity" (change)="cityChanged()">
+        <mat-option *ngFor="let city of cities" [value]="city.name">
+          {{city.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-toolbar>
+
+  <mat-card-content class="content">
+
+    <img *ngIf="!tableMode" mat-card-image src="../../../assets/img/space_station.jpg" alt="ISS over the Earth">
+
+    <div *ngIf="tableMode">
+    <app-data-table [cityName]="selectedCity" [cities]="cities"></app-data-table>
+  </div>
+
+  </mat-card-content>
+</mat-card>

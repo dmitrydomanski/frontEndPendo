@@ -1,0 +1,13 @@
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px;
+    height: 80px;
+}
+
+.content{
+    width: 70vw;
+    margin-top: 5vh;
+    padding: 24px;
+}
