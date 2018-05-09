@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { ICity } from '../models/city.model';
 
 @Injectable()
 export class DataService {
@@ -23,10 +24,9 @@ export class DataService {
   }
 
   // creating citiesArray for select
-  createCitiesArray() {
-    const cities = [];
-    this.givenCities.forEach(city => {
-      cities.push(this.createCity(String(city[0]), Number(city[1]), Number(city[2])));
+  createCitiesArray(): ICity[] {
+    const cities = this.givenCities.map(city => {
+      return new ICity(<string> city[0], <number> city[1], <number> city[2]);
     });
     return cities;
   }
@@ -43,7 +43,7 @@ export class DataService {
     const requestUrl = this.sunSetApiUrl + '&lat=' + lat + '&lng=' + long + '&date=' + date;
     return this.http.get(requestUrl)
       .map((res: Response) => {
-        return { date: date, rslt: res.json() }
+        return { date: date, rslt: res.json() };
       });
   }
 }

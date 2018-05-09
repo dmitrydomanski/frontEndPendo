@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChange, SimpleChanges } from '@angul
 import { MatTableDataSource } from '@angular/material';
 import { DataService } from '../../services/data.service';
 import { ICity } from '../../models/city.model';
+import { IDay } from '../../models/day.model';
 import { IPass } from '../../models/pass.model';
 
 
@@ -14,7 +15,7 @@ export class DataTableComponent implements OnChanges {
 
   @Input() cityName: string;
   @Input() cities: ICity[];
-  public dayparameters: Object[];
+  public dayparameters: IDay[] = new Array();
   public dataSource = new MatTableDataSource();
   public displayedColumns = ['Rise', 'Duration', 'Day/Night'];
 
@@ -22,53 +23,56 @@ export class DataTableComponent implements OnChanges {
   }
 
   // detecting changes in a parent component
-
   ngOnChanges(changes: SimpleChanges) {
+    // setting new arrays instead of previously populated
+    this.dataSource.data = new Array<IPass>();
+    this.dayparameters = new Array<IDay>();
+
+    // making a new request for data
     if (typeof changes.cityName !== undefined) {
       this.requestData(changes.cityName.currentValue);
     }
-
   }
 
   // requesting data on a selected city, changing the view to display table
-
   requestData(city) {
 
+    // getting the city for ISS request
     const cityObject = this.cities.find(c => c.name === city);
 
+    // sending ISS request, mapping reponse for IPass array
     this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data => {
       this.dataSource.data = data.response.map(element => {
-        return new IPass(this.getShortDate(element.risetime), element.risetime, element.duration, false);
+        return new IPass(this.getShortDate(element.risetime), element.risetime, element.duration);
       });
 
+      // creating an array of unique dates to reduce number of day/night requests
       const passes: IPass[] = this.dataSource.data;
       const ud = new Set(passes.map(p => p.date));
 
-      ud.forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d).subscribe(res => {
+      // making a day/night request, mapping response to seconds
+      ud.forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d)
+        .map(res => {
+          return new IDay(res.date,
+            new Date(res.date + ' ' + res.rslt.results.sunrise).getTime() / 1000,
+            new Date(res.date + ' ' + res.rslt.results.sunset).getTime() / 1000);
+        })
+        // save the results to a variable
+        .subscribe(res => {
+          this.dayparameters.push(res);
+          console.log(this.dayparameters.length, ud.size);
 
-// this.dayparameters = res.map()
-        // console.log(res);
-        // this.dayparameters.push(res);
-        // this.dayparameters = res.results.map(el => {
-        //   return { date: d, sunrise: el.sunrise, sunset: el.sunset };
-        // });
-        // console.log(this.dayparameters);
-      }));
+          if (this.dayparameters.length === ud.size) {
+            passes.forEach(p => {
+              const day = this.dayparameters.find(x => x.date === p.date);
+              (p.risetime > day.sunriseTime && p.risetime < day.sunsetTime) ? p.daytime = true : p.daytime = false;
+            });
+            this.dataSource.data = passes;
+            console.log(this.dataSource.data);
+          }
+
+        }));
     });
-  }
-
-  // extracting unique elements from an array to use further
-  unique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
-  getUniqueDates(r) {
-    const dates = r.map(p => {
-      this.getShortDate(p.risetime);
-    });
-    console.log(r);
-    console.log(dates);
-    return dates.filter(this.unique);
   }
 
   // is valid for timestamp in seconds only

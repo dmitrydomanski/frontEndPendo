@@ -1,5 +1,9 @@
-export interface ICity {
-    name?: string;
-    lat?: number;
-    lng?: number;
+export class ICity {
+    constructor(
+        public name?: string,
+        public lat?: number,
+        public lng?: number
+    ) {
+
+    }
 }

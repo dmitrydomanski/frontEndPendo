@@ -1,3 +1,5 @@
+
+
 export class IPass {
     constructor(
         public date?: string,
@@ -7,5 +9,5 @@ export class IPass {
     ) {
 
     }
-
 }
+
