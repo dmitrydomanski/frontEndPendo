@@ -42,7 +42,10 @@ export class DataService {
   getSunRise(lat, long, date) {
     const requestUrl = this.sunSetApiUrl + '&lat=' + lat + '&lng=' + long + '&date=' + date;
     return this.http.get(requestUrl)
-      .map((res: Response) => res.json());
+      .map((res: Response) => {
+        return { date: date, rslt: res.json() }
+      });
   }
-
 }
+
+

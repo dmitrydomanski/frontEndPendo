@@ -1,5 +1,11 @@
-export interface IPass {
-    risetime?: number;
-    duration?: number;
-    daytime?: boolean;
+export class IPass {
+    constructor(
+        public date?: string,
+        public risetime?: number,
+        public duration?: number,
+        public daytime?: boolean
+    ) {
+
+    }
+
 }
