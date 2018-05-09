@@ -14,6 +14,7 @@ export class DataTableComponent implements OnChanges {
 
   @Input() cityName: string;
   @Input() cities: ICity[];
+  public dayparameters: Object[];
   public dataSource = new MatTableDataSource();
   public displayedColumns = ['Rise', 'Duration', 'Day/Night'];
 
@@ -32,13 +33,26 @@ export class DataTableComponent implements OnChanges {
   // requesting data on a selected city, changing the view to display table
 
   requestData(city) {
+
     const cityObject = this.cities.find(c => c.name === city);
+
     this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data => {
       this.dataSource.data = data.response.map(element => {
-        return { risetime: element.risetime, duration: element.duration, daytime: false };
+        return new IPass(this.getShortDate(element.risetime), element.risetime, element.duration, false);
       });
-      this.getUniqueDates(data.response).forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d).subscribe(smth => {
-        console.log(smth);
+
+      const passes: IPass[] = this.dataSource.data;
+      const ud = new Set(passes.map(p => p.date));
+
+      ud.forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d).subscribe(res => {
+
+// this.dayparameters = res.map()
+        // console.log(res);
+        // this.dayparameters.push(res);
+        // this.dayparameters = res.results.map(el => {
+        //   return { date: d, sunrise: el.sunrise, sunset: el.sunset };
+        // });
+        // console.log(this.dayparameters);
       }));
     });
   }
@@ -48,20 +62,19 @@ export class DataTableComponent implements OnChanges {
     return self.indexOf(value) === index;
   }
 
-  getUniqueDates(response) {
-    const dates = response.map(p => {
-      return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
-        + '-' + new Date(p.risetime * 1000).getDate();
+  getUniqueDates(r) {
+    const dates = r.map(p => {
+      this.getShortDate(p.risetime);
     });
+    console.log(r);
+    console.log(dates);
     return dates.filter(this.unique);
   }
 
-  //   console.log(data.response);
-  //   const dates = data.response.map(p => {
-  //     return new Date(p.risetime * 1000).getFullYear() + '-' + (new Date(p.risetime * 1000).getMonth() + 1)
-  //       + '-' + new Date(p.risetime * 1000).getDate();
-  //   });
-  //   const uniqueDays = dates.filter(this.unique);
-  //   console.log(dates, uniqueDays);
-  // });
+  // is valid for timestamp in seconds only
+  getShortDate(timestamp) {
+    return new Date(timestamp * 1000).getFullYear() + '-' + (new Date(timestamp * 1000).getMonth() + 1)
+      + '-' + new Date(timestamp * 1000).getDate();
+  }
+
 }
