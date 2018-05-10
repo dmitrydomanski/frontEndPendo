@@ -12,23 +12,23 @@ export class DataService {
   // cities & coordinates from the assignment, hardcoded
 
   givenCities = [
-    ['Tel-Aviv', 32.0853, 34.7818],
-    ['London', 51.5074, -0.127],
-    ['New-York', 40.7128, -74.006]
+    ['Tel-Aviv', 32.0853, 34.7818, 0],
+    ['London', 51.5074, -0.127, -2],
+    ['New-York', 40.7128, -74.006, -7]
   ];
 
   constructor(private http: Http) { }
 
-  createCity(name: string, lat: number, lng: number) {
-    return { name: name, lat: lat, lng: lng };
+  createCity(name: string, lat: number, lng: number, timezone: number): ICity {
+    return new ICity(name, lat, lng, timezone);
   }
 
   // creating citiesArray for select
   createCitiesArray(): ICity[] {
-    const cities = this.givenCities.map(city => {
-      return new ICity(<string> city[0], <number> city[1], <number> city[2]);
-    });
+    const cities = new Array<ICity>();
+    this.givenCities.forEach(p => cities.push(new ICity(<string>p[0], <number>p[1], <number>p[2],<number>p[3])));
     return cities;
+    
   }
 
   // getting data from API, just the responce property that we'll use for table later
@@ -40,7 +40,7 @@ export class DataService {
 
   // getting sunrise time from sunset API
   getSunRise(lat, long, date) {
-    const requestUrl = this.sunSetApiUrl + '&lat=' + lat + '&lng=' + long + '&date=' + date;
+    const requestUrl = this.sunSetApiUrl + '&lat=' + lat + '&lng=' + long + '&date=' + date + '&formatted=0';
     return this.http.get(requestUrl)
       .map((res: Response) => {
         return { date: date, rslt: res.json() };

@@ -43,7 +43,8 @@ export class DataTableComponent implements OnChanges {
     // sending ISS request, mapping reponse for IPass array
     this.dataService.getData(cityObject.lat, cityObject.lng).subscribe(data => {
       this.dataSource.data = data.response.map(element => {
-        return new IPass(this.getShortDate(element.risetime), element.risetime, element.duration);
+        console.log(element.risetime, typeof cityObject.timezone);
+        return new IPass(this.getShortDate(element.risetime), (element.risetime), element.duration);
       });
 
       // creating an array of unique dates to reduce number of day/night requests
@@ -54,13 +55,13 @@ export class DataTableComponent implements OnChanges {
       ud.forEach(d => this.dataService.getSunRise(cityObject.lat, cityObject.lng, d)
         .map(res => {
           return new IDay(res.date,
-            new Date(res.date + ' ' + res.rslt.results.sunrise).getTime() / 1000,
-            new Date(res.date + ' ' + res.rslt.results.sunset).getTime() / 1000);
+            (Date.parse(res.rslt.results.sunrise) + cityObject.timezone * 3600000) / 1000,
+            (Date.parse(res.rslt.results.sunset) + cityObject.timezone * 3600000) / 1000);
         })
         // save the results to a variable
         .subscribe(res => {
           this.dayparameters.push(res);
-          console.log(this.dayparameters.length, ud.size);
+          console.log(res);
 
           if (this.dayparameters.length === ud.size) {
             passes.forEach(p => {
