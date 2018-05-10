@@ -2,20 +2,13 @@ import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { ICity } from '../models/city.model';
+import { environment } from '../../environments/environment';
+import { CITIES } from '../../definitions/preset-cities';
 
 @Injectable()
 export class DataService {
 
-  private issApiUrl = 'http://api.open-notify.org/iss-pass.json?&alt=20&n=10';
-  private sunSetApiUrl = 'https://api.sunrise-sunset.org/json?';
-
-  // cities & coordinates from the assignment, hardcoded
-
-  givenCities = [
-    ['Tel-Aviv', 32.0853, 34.7818, 0],
-    ['London', 51.5074, -0.127, -2],
-    ['New-York', 40.7128, -74.006, -7]
-  ];
+  preSetCities = CITIES;
 
   constructor(private http: Http) { }
 
@@ -23,24 +16,33 @@ export class DataService {
     return new ICity(name, lat, lng, timezone);
   }
 
-  // creating citiesArray for select
   createCitiesArray(): ICity[] {
     const cities = new Array<ICity>();
-    this.givenCities.forEach(p => cities.push(new ICity(<string>p[0], <number>p[1], <number>p[2],<number>p[3])));
+    this.preSetCities.forEach(p => cities.push(new ICity(<string>p[0], <number>p[1], <number>p[2], <number>p[3])));
     return cities;
-    
   }
 
-  // getting data from API, just the responce property that we'll use for table later
+/**
+ * sends a request to issAPI to get nearest 10 passes with
+ *  the details of a selected city
+ * @param lat lattitude of a city
+ * @param long longitude of a city
+ */
   getData(lat, long) {
-    const requestUrl = this.issApiUrl + '&lat=' + lat + '&lon=' + long;
+    const requestUrl = environment.issAPI + '&lat=' + lat + '&lon=' + long;
     return this.http.get(requestUrl)
       .map((res: Response) => res.json());
   }
-
-  // getting sunrise time from sunset API
+/**
+ * sends a request to sunriseAPI to get
+ * the astronomical dimensions of a specific day
+ * in a scecific location
+ * @param lat lattitude of a city
+ * @param long longitude of a city
+ * @param date date that we want to ret data for
+ */
   getSunRise(lat, long, date) {
-    const requestUrl = this.sunSetApiUrl + '&lat=' + lat + '&lng=' + long + '&date=' + date + '&formatted=0';
+    const requestUrl = environment.sunriseAPI + '&lat=' + lat + '&lng=' + long + '&date=' + date + '&formatted=0';
     return this.http.get(requestUrl)
       .map((res: Response) => {
         return { date: date, rslt: res.json() };

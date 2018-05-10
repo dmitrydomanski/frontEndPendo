@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ICity } from '../../models/city.model';
 import { DataService } from '../../services/data.service';
-import { DataTableComponent } from '../data-table/data-table.component';
 
 @Component({
   selector: 'app-main-display',
@@ -18,13 +17,13 @@ export class MainDisplayComponent implements OnInit {
   constructor(private dataService: DataService) {  }
 
   ngOnInit() {
-    // creating a cities array for select options
-
     this.cities = this.dataService.createCitiesArray();
   }
 
-  // changing mode of the view to display a table instead of ISS image
-
+  /**
+   * changes the view mode
+   * to let the table be displayed
+   */
   cityChanged() {
     this.tableMode = true;
   }

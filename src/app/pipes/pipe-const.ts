@@ -1,4 +1,3 @@
 export class DateConstants {
-    static readonly RISE = 'medium';
-    static readonly DUR = 'hh:mm:ss';
+    static readonly RISE = 'yyyy MMM dd HH:mm:ss';
   }
